@@ -1,0 +1,29 @@
+#!/usr/bin/python
+
+import sys
+from PyQt4.QtGui import *
+from PyQt4.QtCore import *
+
+array = ['-a(--all)','-A(--almost-all)','--author','-b(--escape)','-B(--ignore-backups)','-C','-D(--dired)','-f','-F(--classify)','--file-type','--full-time','-g','--group-directories-first','-G(--no-group)','-h(--human-readable)','--si','-H(--dereference-command-line)','--dereference-command-line-symlink-to-dir','-i(--inode)','-k','-l','-L(--dereference)','-m','-n(--numeric-uid-gid)','-N(--literal)','-o','-p','-q(--hide-control-chars)','--show-control-chars','-Q(--quote-name)','-r(--reverse)','-R(--recursive)','-s(--size)','-S','-t','-T','-u','-U','-v','-w','-x','-X','-Z(--context)','-1', '--help', '--version']
+
+class Window(QWidget):
+    def __init__(self):
+        QWidget.__init__(self)
+
+	self.setWindowTitle('lsGui')
+        layout = QVBoxLayout()
+        self.checks = []
+	for i in xrange(45):
+            c = QCheckBox(array[i])
+            layout.addWidget(c)
+            self.checks.append(c)	
+
+        self.setLayout(layout)
+
+if __name__ == '__main__':
+    app = QApplication(sys.argv)
+
+    w = Window()
+    w.show()
+
+    app.exec_()
