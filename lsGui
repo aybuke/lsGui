@@ -18,24 +18,36 @@ params = [
 ]
 
 
-class Window(QWidget):
-    def __init__(self):
-        QWidget.__init__(self)
+class Widget(QWidget):
 
+    def __init__(self, parent= None):
+        super(Widget, self).__init__()
+        self.setFixedHeight(600)
         self.selected_params = []
 
-        button = QPushButton('just ls execute', self)
-        button.clicked.connect(self.run_ls)
-
-        layout = QVBoxLayout()
-        layout.addWidget(button)
+        #Container Widget       
+        widget = QWidget()
+        #Layout of Container Widget
+        layout = QVBoxLayout(self)
 
         for p in params:
             c = QCheckBox(p[1])
             layout.addWidget(c)
-            c.stateChanged.connect(self.gen_callback(p[0]))
+            c.stateChanged.connect(self.gen_callback(p[0]))        
+	
+	widget.setLayout(layout)
 
-        self.setLayout(layout)
+        #Scroll Area Properties
+        scroll = QScrollArea()
+        scroll.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
+        scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        scroll.setWidgetResizable(False)
+        scroll.setWidget(widget)
+
+        #Scroll Area Layer add
+        vLayout = QVBoxLayout(self)
+        vLayout.addWidget(scroll)
+        self.setLayout(vLayout)
 
     def gen_callback(self, param):
         def callback(state):
@@ -48,15 +60,15 @@ class Window(QWidget):
 
     def run_ls(self, params):
         if not isinstance(params, list):
-	    params = []
+            params = []
         call(["ls"] + params)
+
 
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
 
-    w = Window()
-    w.resize(400, 600)
-    w.show()
+    dialog = Widget()
+    dialog.show()
 
     app.exec_()
