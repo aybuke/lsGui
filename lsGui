@@ -1,34 +1,56 @@
 #!/usr/bin/python
 
-array = ['-a(--all)','-A(--almost-all)','--author','-b(--escape)','-B(--ignore-backups)','-C','-D(--dired)','-f','-F(--classify)','-g','-G(--no-group)','-h(--human-readable)','--si','-H(--dereference-command-line)','-i(--inode)','-k','-l','-L(--dereference)','-m','-n(--numeric-uid-gid)','-N(--literal)','-o','-p','-q(--hide-control-chars)','-Q(--quote-name)','-r(--reverse)','-R(--recursive)','-s(--size)','-S','-t','-T','-u','-U','-v','-w','-x','-X','-Z(--context)','-1', '--help', '--version']
-
 import sys
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 from subprocess import call
 
+
+params = [
+    ('-a', '-a'),('-A', '-A'),('--author', '--author'),('-b', '-b'),
+    ('-B', '-B'),('-C','-C'),('-d', '-d'),('-D','-D'),('-f', '-f'),
+    ('-F', '-F'),('--file-type', '--file-type'),('-g','-g'),('-G','-G'),
+    ('-h','-h'),('--si','--si'),('-H','-H'),('-i','-i'),('-I','-I'),
+    ('-k','-k'),('-l','-l'),('-m','-m'),('-n','-n'),('-o','-o'),
+    ('-Q','-Q'),('-r','-r'),('-R','-R'),('-s','-s'),('-t','-t'),
+    ('-U','-U'),('-v','-v'),('-x','-x'),('-X','-X'),('-1','-1'),
+    ('--help','--help'),('--version','--version')
+]
+
+
 class Window(QWidget):
     def __init__(self):
         QWidget.__init__(self)
-	
-	self.button = QPushButton('just ls execute', self)
-	self.button.clicked.connect(self.execute)
-        
-	layout = QVBoxLayout()
-	layout.addWidget(self.button)
-        checks = []
-        for i in xrange(30):
-            c = QCheckBox(array[i])
+
+        self.selected_params = []
+
+        button = QPushButton('just ls execute', self)
+        button.clicked.connect(self.run_ls)
+
+        layout = QVBoxLayout()
+        layout.addWidget(button)
+
+        for p in params:
+            c = QCheckBox(p[1])
             layout.addWidget(c)
-            checks.append(c)
-   	    c.stateChanged.connect(self.execute)
-	self.setLayout(layout)
-    
-    def execute(self, state):
-	    if state == Qt.Unchecked:
-		call(["ls"])
-	    else:
-		call(["ls", "--all"]) #add selected element.
+            c.stateChanged.connect(self.gen_callback(p[0]))
+
+        self.setLayout(layout)
+
+    def gen_callback(self, param):
+        def callback(state):
+            if state == Qt.Unchecked:
+                self.selected_params.remove(param)
+            else:
+                self.selected_params.append(param)
+            self.run_ls(self.selected_params)
+        return callback
+
+    def run_ls(self, params):
+        if not isinstance(params, list):
+	    params = []
+        call(["ls"] + params)
+
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
@@ -38,5 +60,3 @@ if __name__ == '__main__':
     w.show()
 
     app.exec_()
-
-
