@@ -5,29 +5,36 @@ array = ['-a(--all)','-A(--almost-all)','--author','-b(--escape)','-B(--ignore-b
 import sys
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
+from subprocess import call
 
 class Window(QWidget):
     def __init__(self):
         QWidget.__init__(self)
 	
-	self.button = QPushButton('execute', self)
+	self.button = QPushButton('just ls execute', self)
 	self.button.clicked.connect(self.execute)
-        layout1 = QVBoxLayout()
-	layout1.addWidget(self.button)
-        self.checks = []
+        
+	layout = QVBoxLayout()
+	layout.addWidget(self.button)
+        checks = []
         for i in xrange(30):
             c = QCheckBox(array[i])
-            layout1.addWidget(c)
-            self.checks.append(c)
-        self.setLayout(layout1)
-
-    def execute(self):
- 	print ('Hello World')
+            layout.addWidget(c)
+            checks.append(c)
+   	    c.stateChanged.connect(self.execute)
+	self.setLayout(layout)
+    
+    def execute(self, state):
+	    if state == Qt.Unchecked:
+		call(["ls"])
+	    else:
+		call(["ls", "--all"]) #add selected element.
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
 
     w = Window()
+    w.resize(400, 600)
     w.show()
 
     app.exec_()
